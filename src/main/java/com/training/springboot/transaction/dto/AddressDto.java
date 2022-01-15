@@ -30,4 +30,6 @@ public class AddressDto {
 
     @NotNull
     private Boolean primaryAddress;
+
+    private CityDto city;
 }

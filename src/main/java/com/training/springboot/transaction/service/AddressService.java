@@ -12,4 +12,6 @@ public interface AddressService {
     AddressDto getAddress(Long id);
 
     void deleteAddress(Long id);
+
+    List<AddressDto> getAllAddressPagination(int page, int contentPerPage);
 }
