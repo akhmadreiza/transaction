@@ -6,6 +6,8 @@ import com.training.springboot.transaction.repository.AddressRepository;
 import com.training.springboot.transaction.service.AddressService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -20,12 +22,14 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public AddressDto saveAddress(AddressDto addressDto) {
+        //TODO: save city to address relationship
         if (!ObjectUtils.isEmpty(addressDto.getId())) {
             //logic for update data
             AddressDto oldAddressDto = this.getAddress(addressDto.getId());
             copyPropertiesForPatch(oldAddressDto, addressDto);
             addressDto = oldAddressDto;
         }
+        //TODO: call city repo by City code in addressDto before save address.
         Address address = new Address();
         BeanUtils.copyProperties(addressDto, address);
         Address savedAddress = addressRepository.save(address);
@@ -77,5 +81,18 @@ public class AddressServiceImpl implements AddressService {
     public void deleteAddress(Long id) {
         Address addressFromDb = addressRepository.getById(id);
         addressRepository.delete(addressFromDb);
+    }
+
+    @Override
+    public List<AddressDto> getAllAddressPagination(int page, int contentPerPage) {
+        Page<Address> addressPage = addressRepository.findAll(PageRequest.of(page, contentPerPage));
+        List<Address> addressList = addressPage.getContent();
+        List<AddressDto> resultList = new ArrayList<>();
+        for (Address each : addressList) {
+            AddressDto addressDto = new AddressDto();
+            BeanUtils.copyProperties(each, addressDto);
+            resultList.add(addressDto);
+        }
+        return resultList;
     }
 }

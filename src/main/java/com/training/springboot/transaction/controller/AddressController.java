@@ -25,10 +25,14 @@ public class AddressController {
     }
 
     @GetMapping(produces = "application/json")
-    public List<AddressDto> getAllAddress() {
-        return addressService.getAllAddress();
+    public List<AddressDto> getAllAddress(
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "10") int contentPerPage) {
+        //first page is 0, not 1.
+        return addressService.getAllAddressPagination(page, contentPerPage);
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(produces = "application/json")
     public AddressDto saveAddress(@Valid @RequestBody AddressDto addressDto) {
         return addressService.saveAddress(addressDto);

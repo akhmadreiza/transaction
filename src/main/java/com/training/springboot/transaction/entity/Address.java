@@ -14,6 +14,17 @@ public class Address {
     private String namaPenerima;
     private String kodePos;
     private Boolean primaryAddress;
+    
+    @ManyToOne
+    private City city;
+
+    public City getCity() {
+        return city;
+    }
+
+    public void setCity(City city) {
+        this.city = city;
+    }
 
     public Long getId() {
         return id;
