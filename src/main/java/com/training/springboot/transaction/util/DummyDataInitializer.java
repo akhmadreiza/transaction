@@ -1,6 +1,8 @@
 package com.training.springboot.transaction.util;
 
+import com.training.springboot.transaction.entity.Address;
 import com.training.springboot.transaction.entity.City;
+import com.training.springboot.transaction.repository.AddressRepository;
 import com.training.springboot.transaction.repository.CityRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +19,34 @@ public class DummyDataInitializer {
     @Autowired
     private CityRepository cityRepository;
 
+    @Autowired
+    private AddressRepository addressRepository;
+
     @PostConstruct
     public void initDummyDataCity() {
+        //delete all repository and address data
+        addressRepository.deleteAll();
+        cityRepository.deleteAll();
+        initCity();
+        initDummyAddress();
+    }
+
+    private void initDummyAddress() {
+        List<Address> addressList = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            Address address = new Address();
+            address.setAddressLine1("Jalan Kebahagiaan " + (i + 1));
+            address.setAddressLine2("No " + (i + 1));
+            address.setPrimaryAddress(false);
+            address.setKodePos("12321" + (i + 1));
+            address.setCity(cityRepository.getById("JKT"));
+            address.setNamaPenerima("Reiza " + (i + 1));
+            addressList.add(address);
+        }
+        addressRepository.saveAll(addressList);
+    }
+
+    private void initCity() {
         //example using save all
         List<City> cities = new ArrayList<>();
         City city = new City();

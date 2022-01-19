@@ -1,8 +1,12 @@
 package com.training.springboot.transaction.service.impl;
 
 import com.training.springboot.transaction.dto.AddressDto;
+import com.training.springboot.transaction.dto.CityDto;
 import com.training.springboot.transaction.entity.Address;
+import com.training.springboot.transaction.entity.City;
+import com.training.springboot.transaction.exception.DataNotFoundException;
 import com.training.springboot.transaction.repository.AddressRepository;
+import com.training.springboot.transaction.repository.CityRepository;
 import com.training.springboot.transaction.service.AddressService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +17,16 @@ import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AddressServiceImpl implements AddressService {
 
     @Autowired
     private AddressRepository addressRepository;
+
+    @Autowired
+    private CityRepository cityRepository;
 
     @Override
     public AddressDto saveAddress(AddressDto addressDto) {
@@ -31,10 +39,16 @@ public class AddressServiceImpl implements AddressService {
         }
         //TODO: call city repo by City code in addressDto before save address.
         Address address = new Address();
-        BeanUtils.copyProperties(addressDto, address);
-        Address savedAddress = addressRepository.save(address);
-        addressDto.setId(savedAddress.getId());
-        return addressDto;
+        Optional<City> city = cityRepository.findById(addressDto.getCity().getCode());
+        if (city.isPresent()) {
+            BeanUtils.copyProperties(addressDto, address);
+            address.setCity(city.get());
+            Address savedAddress = addressRepository.save(address);
+            addressDto.setId(savedAddress.getId());
+            return addressDto;
+        } else {
+            throw new DataNotFoundException("City not found in database");
+        }
     }
 
     private void copyPropertiesForPatch(AddressDto oldAddressDto, AddressDto addressDto) {
@@ -54,6 +68,20 @@ public class AddressServiceImpl implements AddressService {
         if (!ObjectUtils.isEmpty(addressDto.getKodePos())) {
             oldAddressDto.setKodePos(addressDto.getKodePos());
         }
+        //city
+        if (!ObjectUtils.isEmpty(addressDto.getCity())) {
+            if (!ObjectUtils.isEmpty(addressDto.getCity().getCode())) {
+                String newCityCode = addressDto.getCity().getCode();
+                Optional<City> optionalCity = cityRepository.findById(newCityCode);
+                if (optionalCity.isPresent()) {
+                    CityDto oldCity = oldAddressDto.getCity();
+                    oldCity.setCode(addressDto.getCity().getCode());
+                    oldAddressDto.setCity(oldCity);
+                } else {
+                    throw new DataNotFoundException("City not found in database");
+                }
+            }
+        }
     }
 
     @Override
@@ -71,10 +99,8 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public AddressDto getAddress(Long id) {
-        Address addressFromDb = addressRepository.getById(id);
-        AddressDto addressDtoResponse = new AddressDto();
-        BeanUtils.copyProperties(addressFromDb, addressDtoResponse);
-        return addressDtoResponse;
+        Optional<Address> optionalAddress = addressRepository.findById(id);
+        return constructAddressDto(optionalAddress);
     }
 
     @Override
@@ -84,13 +110,46 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public List<AddressDto> getAllAddressPagination(int page, int contentPerPage) {
-        Page<Address> addressPage = addressRepository.findAll(PageRequest.of(page, contentPerPage));
+    public List<AddressDto> getAllAddressPagination(int page, int contentPerPage, String searchKey) {
+        Page<Address> addressPage;
+        if (ObjectUtils.isEmpty(searchKey)) {
+            addressPage = addressRepository.findAll(PageRequest.of(page, contentPerPage));
+        } else {
+            addressPage = addressRepository.searchAddress(PageRequest.of(page, contentPerPage), searchKey);
+        }
         List<Address> addressList = addressPage.getContent();
+        return constructAddressDto(addressList);
+    }
+
+    @Override
+    public AddressDto getPrimaryAddress() {
+        Address address = addressRepository.findByPrimaryAddressIs(true);
+        AddressDto addressDto = new AddressDto();
+        BeanUtils.copyProperties(address, addressDto);
+        return addressDto;
+    }
+
+    private AddressDto constructAddressDto(Optional<Address> optionalAddress) {
+        if (optionalAddress.isPresent()) {
+            AddressDto addressDtoResponse = new AddressDto();
+            BeanUtils.copyProperties(optionalAddress.get(), addressDtoResponse);
+            CityDto cityDto = new CityDto();
+            BeanUtils.copyProperties(optionalAddress.get().getCity(), cityDto);
+            addressDtoResponse.setCity(cityDto);
+            return addressDtoResponse;
+        } else {
+            throw new DataNotFoundException("Address not found in database");
+        }
+    }
+
+    private List<AddressDto> constructAddressDto(List<Address> addresses) {
         List<AddressDto> resultList = new ArrayList<>();
-        for (Address each : addressList) {
+        for (Address each : addresses) {
             AddressDto addressDto = new AddressDto();
             BeanUtils.copyProperties(each, addressDto);
+            CityDto cityDto = new CityDto();
+            BeanUtils.copyProperties(each.getCity(), cityDto);
+            addressDto.setCity(cityDto);
             resultList.add(addressDto);
         }
         return resultList;

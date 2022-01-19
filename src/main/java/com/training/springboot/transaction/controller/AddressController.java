@@ -27,9 +27,10 @@ public class AddressController {
     @GetMapping(produces = "application/json")
     public List<AddressDto> getAllAddress(
             @RequestParam(required = false, defaultValue = "0") int page,
-            @RequestParam(required = false, defaultValue = "10") int contentPerPage) {
+            @RequestParam(required = false, defaultValue = "10") int contentPerPage,
+            @RequestParam(required = false) String search) {
         //first page is 0, not 1.
-        return addressService.getAllAddressPagination(page, contentPerPage);
+        return addressService.getAllAddressPagination(page, contentPerPage, search);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -49,5 +50,10 @@ public class AddressController {
     @DeleteMapping(value = "/{id}", produces = "application/json")
     public void deleteAddress(@PathVariable Long id) {
         addressService.deleteAddress(id);
+    }
+
+    @GetMapping("/primary")
+    public AddressDto getPrimaryAddress() {
+        return addressService.getPrimaryAddress();
     }
 }

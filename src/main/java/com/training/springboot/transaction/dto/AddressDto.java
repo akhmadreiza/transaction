@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -17,19 +18,21 @@ import javax.validation.constraints.NotNull;
 public class AddressDto {
     private Long id;
 
-    @NotBlank
+    @NotBlank(message = "tidak boleh kosong")
     private String addressLine1;
 
     private String addressLine2;
 
-    @NotBlank
+    @NotBlank(message = "tidak boleh kosong")
     private String namaPenerima;
 
-    @NotBlank
+    @NotBlank(message = "tidak boleh kosong")
     private String kodePos;
 
-    @NotNull
+    @NotNull(message = "tidak boleh kosong")
     private Boolean primaryAddress;
 
+    @NotNull(message = "tidak boleh kosong")
+    @Valid
     private CityDto city;
 }
