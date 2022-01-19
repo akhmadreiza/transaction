@@ -3,13 +3,13 @@ package com.training.springboot.transaction;
 public class TrainingToDo {
     //TODO: Pert 3
     /*
-     * - Implement input Validation
-     * - Handling and throwing exception to client
-     * - Create custom exception (eg. AddressNotFoundException)
-     * - Join Address to City entity
-     * - Create JPA automatic custom query
-     * - Create JPA manual custom query
-     * - Utilized spring profile for local and remote database
+     * - Implement input Validation (DONE)
+     * - Handling and throwing exception to client (DONE)
+     * - Create custom exception (eg. AddressNotFoundException) (DONE)
+     * - Join Address to City entity (DONE)
+     * - Create JPA automatic custom query (DONE)
+     * - Create JPA manual custom query (DONE)
+     * - Utilized spring profile for local and remote database (DONE)
      *
      * */
 

@@ -13,5 +13,7 @@ public interface AddressService {
 
     void deleteAddress(Long id);
 
-    List<AddressDto> getAllAddressPagination(int page, int contentPerPage);
+    List<AddressDto> getAllAddressPagination(int page, int contentPerPage, String searchKey);
+
+    AddressDto getPrimaryAddress();
 }
