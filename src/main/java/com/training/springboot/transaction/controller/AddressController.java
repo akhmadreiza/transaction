@@ -5,6 +5,7 @@ import com.training.springboot.transaction.service.AddressService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
@@ -28,8 +29,11 @@ public class AddressController {
     public List<AddressDto> getAllAddress(
             @RequestParam(required = false, defaultValue = "0") int page,
             @RequestParam(required = false, defaultValue = "10") int contentPerPage,
-            @RequestParam(required = false) String search) {
+            @RequestParam(required = false) String search,
+            HttpServletRequest httpServletRequest) {
         //first page is 0, not 1.
+        String username = httpServletRequest.getUserPrincipal().getName();
+        System.out.println("username: " + username);
         return addressService.getAllAddressPagination(page, contentPerPage, search);
     }
 
