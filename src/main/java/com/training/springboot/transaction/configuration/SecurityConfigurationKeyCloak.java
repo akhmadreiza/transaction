@@ -33,6 +33,7 @@ public class SecurityConfigurationKeyCloak extends KeycloakWebSecurityConfigurer
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         super.configure(http);
+        http.csrf().disable(); //disable csrf check
         http.authorizeRequests()
                 .antMatchers("/address/**", "/users*")
                 .hasRole("user")
