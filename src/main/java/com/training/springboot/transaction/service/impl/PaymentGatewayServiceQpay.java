@@ -1,6 +1,5 @@
 package com.training.springboot.transaction.service.impl;
 
-import com.training.springboot.transaction.constants.Bank;
 import com.training.springboot.transaction.dto.PaymentCreationDto;
 import com.training.springboot.transaction.dto.PaymentDto;
 import com.training.springboot.transaction.dto.qpay.QpayRequestDto;
@@ -32,7 +31,7 @@ public class PaymentGatewayServiceQpay implements PaymentGatewayService {
                 .apiKey(qPayApiKey)
                 .apiSecret(qPayApiSecret)
                 .amount(paymentCreationDto.getAmount())
-                .bank(Bank.BCA)
+                .bank(paymentCreationDto.getBank())
                 .build();
         QpayResponseDto qpayResponseDto = restTemplate.postForObject(qPayUrl + "/create-va", qpayRequestDto, QpayResponseDto.class);
         PaymentDto paymentDtoResponse = new PaymentDto();
