@@ -19,19 +19,24 @@ public class MainController {
 
     @GetMapping("/hello")
     public String printHello() throws InterruptedException {
-        int sleepSecond = 100;
-        Thread.sleep(sleepSecond * 1000);
         return "Hello World";
     }
 
     @GetMapping("/test-slow-api")
     public String testCallSlowApi() {
         try {
-            ResponseEntity<String> response = restTemplate.getForEntity("http://localhost:8080/transaction-service/public/hello", String.class);
+            ResponseEntity<String> response = restTemplate.getForEntity("http://localhost:8080/transaction-service/public/hello-slow", String.class);
             return response.getBody();
         } catch (RestClientException e) {
             log.error("ERROR!", e);
         }
         return "TIMEOUT";
+    }
+
+    @GetMapping("/hello-slow")
+    public String printHelloSlow() throws InterruptedException {
+        int sleepSecond = 100;
+        Thread.sleep(sleepSecond * 1000);
+        return "Hello World";
     }
 }

@@ -4,6 +4,7 @@ import com.training.springboot.transaction.constants.Bank;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "TBL_TRANSACTION_HISTORY")
@@ -22,6 +23,26 @@ public class TransactionHistory {
     private Bank bank;
 
     private String transactionStatus;
+
+    private LocalDateTime createdDateTime;
+
+    private LocalDateTime updatedDateTime;
+
+    public LocalDateTime getCreatedDateTime() {
+        return createdDateTime;
+    }
+
+    public void setCreatedDateTime(LocalDateTime createdDateTime) {
+        this.createdDateTime = createdDateTime;
+    }
+
+    public LocalDateTime getUpdatedDateTime() {
+        return updatedDateTime;
+    }
+
+    public void setUpdatedDateTime(LocalDateTime updatedDateTime) {
+        this.updatedDateTime = updatedDateTime;
+    }
 
     public Long getId() {
         return id;

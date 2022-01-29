@@ -10,6 +10,7 @@ import com.training.springboot.transaction.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -38,7 +39,10 @@ public class TransactionServiceImpl implements TransactionService {
         transactionHistory.setVirtualAccount(paymentDto.getVirtualAccount());
         transactionHistory.setAmount(paymentDto.getAmount());
         transactionHistory.setBank(paymentDto.getBank());
-        transactionHistoryRepository.save(transactionHistory);
+        transactionHistory.setCreatedDateTime(LocalDateTime.now());
+        TransactionHistory insertedTransactionHistory = transactionHistoryRepository.save(transactionHistory);
+        paymentDto.setCreatedDateTime(insertedTransactionHistory.getCreatedDateTime());
+        paymentDto.setUpdatedDateTime(insertedTransactionHistory.getUpdatedDateTime());
         return paymentDto;
     }
 
@@ -49,13 +53,7 @@ public class TransactionServiceImpl implements TransactionService {
         List<PaymentDto> paymentDtoResult = new ArrayList<>();
         for (int i = 0; i < transactionHistoryList.size(); i++) {
             TransactionHistory eachTransactionHistory = transactionHistoryList.get(i);
-            PaymentDto paymentDto = new PaymentDto();
-            paymentDto.setTransactionId(eachTransactionHistory.getTransactionId());
-            paymentDto.setTransactionStatus(eachTransactionHistory.getTransactionStatus());
-            paymentDto.setVirtualAccount(eachTransactionHistory.getVirtualAccount());
-            paymentDto.setAmount(eachTransactionHistory.getAmount());
-            paymentDto.setBank(eachTransactionHistory.getBank());
-            paymentDtoResult.add(paymentDto);
+            paymentDtoResult.add(constructPaymentDto(eachTransactionHistory));
         }
         return paymentDtoResult;
     }
@@ -69,13 +67,20 @@ public class TransactionServiceImpl implements TransactionService {
         }
         TransactionHistory transactionHistory = optionalTransactionHistory.get();
         transactionHistory.setTransactionStatus(status);
+        transactionHistory.setUpdatedDateTime(LocalDateTime.now());
         transactionHistoryRepository.save(transactionHistory);
+        return constructPaymentDto(transactionHistory);
+    }
+
+    private PaymentDto constructPaymentDto(TransactionHistory transactionHistory) {
         PaymentDto paymentDto = new PaymentDto();
         paymentDto.setTransactionId(transactionHistory.getTransactionId());
         paymentDto.setTransactionStatus(transactionHistory.getTransactionStatus());
         paymentDto.setVirtualAccount(transactionHistory.getVirtualAccount());
         paymentDto.setAmount(transactionHistory.getAmount());
         paymentDto.setBank(transactionHistory.getBank());
+        paymentDto.setCreatedDateTime(transactionHistory.getCreatedDateTime());
+        paymentDto.setUpdatedDateTime(transactionHistory.getUpdatedDateTime());
         return paymentDto;
     }
 }
