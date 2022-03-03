@@ -34,6 +34,7 @@ public class SecurityConfigurationKeyCloak extends KeycloakWebSecurityConfigurer
     protected void configure(HttpSecurity http) throws Exception {
         super.configure(http);
         http.csrf().disable(); //disable csrf check
+        http.cors();
         http.authorizeRequests()
                 .antMatchers("/address/**", "/users*")
                 .hasRole("user")
