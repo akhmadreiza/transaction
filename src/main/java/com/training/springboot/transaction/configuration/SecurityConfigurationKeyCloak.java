@@ -36,7 +36,7 @@ public class SecurityConfigurationKeyCloak extends KeycloakWebSecurityConfigurer
         http.csrf().disable(); //disable csrf check
         http.cors();
         http.authorizeRequests()
-                .antMatchers("/address/**", "/users*")
+                .antMatchers("/address/**", "/transactions/**", "/users*")
                 .hasRole("user")
                 .anyRequest()
                 .permitAll();
